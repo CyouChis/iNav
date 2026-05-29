@@ -195,7 +195,7 @@
         </button>
         <button
           v-else
-          @click="() => { $emit('update:collapsed', false); setTimeout(() => openAddCategoryModal(), 300); }"
+          @click="handleCollapsedAddCategory"
           class="w-8 h-8 flex items-center justify-center rounded-xl border border-dashed border-white/20 text-white/40 hover:text-white/70 hover:border-white/30 hover:bg-white/5 transition-all mx-auto"
         >
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -380,7 +380,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, onMounted, nextTick } from 'vue'
+import { ref, onMounted, nextTick } from 'vue'
 
 export interface Bookmark {
   id: string
@@ -511,6 +511,11 @@ function handleContextMenu(
   bookmarkId?: string
 ) {
   contextMenu.value = { x: event.clientX, y: event.clientY, type, categoryId, bookmarkId }
+}
+
+function handleCollapsedAddCategory() {
+  emit('update:collapsed', false)
+  setTimeout(() => openAddCategoryModal(), 300)
 }
 
 function openAddCategoryModal() {

@@ -103,7 +103,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, onMounted } from 'vue'
+import { ref, computed, watch } from 'vue'
 import SidebarWidget, { type Category } from './components/widgets/SidebarWidget.vue'
 import ClockWidget from './components/widgets/ClockWidget.vue'
 import SearchWidget from './components/widgets/SearchWidget.vue'

@@ -5,3 +5,8 @@ declare module '*.vue' {
   const component: DefineComponent<{}, {}, any>
   export default component
 }
+
+declare module '@/config/*.json' {
+  const value: Record<string, any>
+  export default value
+}

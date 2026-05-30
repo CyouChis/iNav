@@ -1,0 +1,99 @@
+{
+  "quickLinks": [
+    { "id": "1", "name": "GitHub", "url": "https://github.com" },
+    { "id": "2", "name": "YouTube", "url": "https://youtube.com" },
+    { "id": "3", "name": "Twitter", "url": "https://twitter.com" },
+    { "id": "4", "name": "知乎", "url": "https://zhihu.com" },
+    { "id": "5", "name": "哔哩哔哩", "url": "https://bilibili.com" },
+    { "id": "6", "name": "豆瓣", "url": "https://douban.com" }
+  ],
+  "searchEngines": [
+    { "name": "Google", "url": "https://www.google.com/search?q=", "color": "#4285F4" },
+    { "name": "Bing", "url": "https://www.bing.com/search?q=", "color": "#00A4EF" },
+    { "name": "百度", "url": "https://www.baidu.com/s?wd=", "color": "#2932E1" }
+  ],
+  "sidebarCategories": [
+    {
+      "id": "1",
+      "name": "常用工具",
+      "color": "#6366f1",
+      "expanded": true,
+      "bookmarks": [
+        { "id": "11", "name": "ChatGPT", "url": "https://chatgpt.com" },
+        { "id": "12", "name": "Claude", "url": "https://claude.ai" },
+        { "id": "13", "name": "Notion", "url": "https://notion.so" }
+      ]
+    },
+    {
+      "id": "2",
+      "name": "开发资源",
+      "color": "#22c55e",
+      "expanded": true,
+      "bookmarks": [
+        { "id": "21", "name": "GitHub", "url": "https://github.com" },
+        { "id": "22", "name": "Stack Overflow", "url": "https://stackoverflow.com" },
+        { "id": "23", "name": "MDN Docs", "url": "https://developer.mozilla.org" },
+        { "id": "24", "name": "npm", "url": "https://npmjs.com" }
+      ]
+    },
+    {
+      "id": "3",
+      "name": "设计灵感",
+      "color": "#ec4899",
+      "expanded": false,
+      "bookmarks": [
+        { "id": "31", "name": "Figma", "url": "https://figma.com" },
+        { "id": "32", "name": "Dribbble", "url": "https://dribbble.com" },
+        { "id": "33", "name": "Behance", "url": "https://behance.net" }
+      ]
+    },
+    {
+      "id": "4",
+      "name": "社交媒体",
+      "color": "#f97316",
+      "expanded": false,
+      "bookmarks": [
+        { "id": "41", "name": "微博", "url": "https://weibo.com" },
+        { "id": "42", "name": "Twitter", "url": "https://twitter.com" },
+        { "id": "43", "name": "LinkedIn", "url": "https://linkedin.com" }
+      ]
+    }
+  ],
+  "backgrounds": [
+    {
+      "type": "gradient",
+      "value": "linear-gradient(135deg, #1a1a2e 0%, #16213e 40%, #0f3460 100%)",
+      "label": "深蓝"
+    },
+    {
+      "type": "gradient",
+      "value": "linear-gradient(135deg, #0d0d0d 0%, #1a0533 40%, #300a4f 100%)",
+      "label": "紫夜"
+    },
+    {
+      "type": "gradient",
+      "value": "linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 50%, #2d2d2d 100%)",
+      "label": "暗黑"
+    },
+    {
+      "type": "gradient",
+      "value": "linear-gradient(135deg, #062c1a 0%, #0a3d2e 40%, #0d4f3c 100%)",
+      "label": "墨绿"
+    },
+    {
+      "type": "image",
+      "value": "https://images.unsplash.com/photo-1614851099511-773084f6911d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1920",
+      "label": "渐变1"
+    },
+    {
+      "type": "image",
+      "value": "https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1920",
+      "label": "渐变2"
+    },
+    {
+      "type": "image",
+      "value": "https://images.unsplash.com/photo-1635776062127-d379bfcba9f8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1920",
+      "label": "渐变3"
+    }
+  ]
+}

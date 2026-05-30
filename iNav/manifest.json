@@ -1,0 +1,10 @@
+{
+  "manifest_version": 3,
+  "name": "iNav - 新标签页",
+  "version": "0.0.1",
+  "description": "一个美观实用的浏览器新标签页扩展",
+  "chrome_url_overrides": {
+    "newtab": "index.html"
+  },
+  "permissions": ["storage"]
+}

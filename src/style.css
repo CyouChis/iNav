@@ -2,6 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer components {
+  .glass-widget {
+    @apply relative px-5 py-4 rounded-[20px] bg-accent-gradient backdrop-blur-glass border border-glass-border border-t border-t-glass-border-top shadow-glass;
+  }
+}
+
 :root {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;

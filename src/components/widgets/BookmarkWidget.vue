@@ -2,21 +2,11 @@
   <div>
     <!-- Glass container -->
     <div
-      class="relative px-5 py-4"
-      style="
-        border-radius: 20px;
-        background: linear-gradient(135deg, rgba(255,255,255,0.12) 0%, rgba(180,140,255,0.06) 100%);
-        backdrop-filter: blur(30px);
-        -webkit-backdrop-filter: blur(30px);
-        border: 1px solid rgba(255,255,255,0.18);
-        border-top: 1.5px solid rgba(255,255,255,0.35);
-        box-shadow: inset 0 1px 0 rgba(255,255,255,0.15), 0 8px 32px rgba(0,0,0,0.2);
-      "
+      class="glass-widget"
     >
       <!-- Top highlight -->
       <div
-        class="absolute top-0 left-8 right-8 pointer-events-none"
-        style="height: 1px; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.5) 40%, rgba(255,255,255,0.5) 60%, transparent)"
+        class="absolute top-0 left-8 right-8 pointer-events-none h-px bg-highlight-gradient"
       />
 
       <div class="flex flex-wrap justify-center gap-1">
@@ -41,8 +31,7 @@
               @click.prevent="editing && $event.preventDefault()"
             >
               <div
-                class="w-8 h-8 flex items-center justify-center rounded-xl transition-all group-hover/link:scale-110 group-hover/link:shadow-lg"
-                style="background: rgba(255,255,255,0.1)"
+                class="w-8 h-8 flex items-center justify-center rounded-xl transition-all group-hover/link:scale-110 group-hover/link:shadow-lg bg-glass-lightest"
               >
                 <img
                   v-if="link.url"
@@ -84,8 +73,7 @@
           style="width: 64px"
         >
           <div
-            class="w-8 h-8 flex items-center justify-center rounded-xl text-white/25 hover:text-white/50 transition-colors"
-            style="background: rgba(255,255,255,0.06); border: 1px dashed rgba(255,255,255,0.2)"
+            class="w-8 h-8 flex items-center justify-center rounded-xl text-white/25 hover:text-white/50 transition-colors bg-glass-subtle border border-dashed border-glass-border-dashed"
           >
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M5 12h14" />
@@ -112,14 +100,7 @@
       <div v-if="showAdd" class="fixed inset-0 z-50 flex items-center justify-center" @click.self="showAdd = false">
         <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" />
         <div
-          class="relative rounded-2xl shadow-2xl p-6 w-[340px]"
-          style="
-            background: rgba(30,20,60,0.85);
-            backdrop-filter: blur(40px);
-            border: 1px solid rgba(255,255,255,0.18);
-            border-top: 1.5px solid rgba(255,255,255,0.35);
-            box-shadow: inset 0 1px 0 rgba(255,255,255,0.2), 0 20px 60px rgba(0,0,0,0.5);
-          "
+          class="relative rounded-2xl shadow-2xl p-6 w-[340px] bg-glass-overlay backdrop-blur-glass-heavy border border-glass-border border-t border-t-glass-border-top shadow-glass-dark"
         >
           <div class="flex items-center justify-between mb-4">
             <h3 style="font-size: 15px; font-weight: 600" class="text-white">添加快捷方式</h3>
@@ -140,8 +121,7 @@
                 v-model="newLinkUrl"
                 autofocus
                 placeholder="https://example.com"
-                class="w-full px-3 py-2.5 rounded-xl text-white outline-none placeholder:text-white/25"
-                style="font-size: 14px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15)"
+                class="w-full px-3 py-2.5 rounded-xl text-white outline-none placeholder:text-white/25 bg-glass-lightest border border-glass-border-light text-sm"
               />
             </div>
             <div>
@@ -149,8 +129,7 @@
               <input
                 v-model="newLinkName"
                 :placeholder="newLinkUrl ? getDomain(newLinkUrl) : '网站名称'"
-                class="w-full px-3 py-2.5 rounded-xl text-white outline-none placeholder:text-white/25"
-                style="font-size: 14px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15)"
+                class="w-full px-3 py-2.5 rounded-xl text-white outline-none placeholder:text-white/25 bg-glass-lightest border border-glass-border-light text-sm"
               />
             </div>
             <div class="flex gap-2 pt-1">
@@ -164,8 +143,7 @@
               </button>
               <button
                 type="submit"
-                class="flex-1 py-2.5 rounded-xl text-white transition-colors"
-                style="font-size: 14px; background: linear-gradient(135deg, #6366f1, #8b5cf6)"
+                class="flex-1 py-2.5 rounded-xl text-white transition-colors bg-accent-gradient-btn text-sm"
               >
                 添加
               </button>
@@ -179,6 +157,7 @@
 
 <script setup lang="ts">
 import { ref, watch } from 'vue'
+import defaultLinksData from '@/config/links.json'
 
 export interface QuickLink {
   id: string
@@ -186,14 +165,7 @@ export interface QuickLink {
   url: string
 }
 
-const DEFAULT_LINKS: QuickLink[] = [
-  { id: '1', name: 'GitHub', url: 'https://github.com' },
-  { id: '2', name: 'YouTube', url: 'https://youtube.com' },
-  { id: '3', name: 'Twitter', url: 'https://twitter.com' },
-  { id: '4', name: '知乎', url: 'https://zhihu.com' },
-  { id: '5', name: '哔哩哔哩', url: 'https://bilibili.com' },
-  { id: '6', name: '豆瓣', url: 'https://douban.com' },
-]
+const DEFAULT_LINKS: QuickLink[] = defaultLinksData.quickLinks
 
 // Load from localStorage or use defaults
 const storedLinks = localStorage.getItem('quickLinks')
@@ -259,6 +231,29 @@ function handleAddLink() {
 </script>
 
 <style scoped>
+.bg-accent-gradient {
+  background: linear-gradient(135deg, rgba(255,255,255,0.12) 0%, rgba(180,140,255,0.06) 100%);
+}
+
+.bg-highlight-gradient {
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.5) 40%, rgba(255,255,255,0.5) 60%, transparent);
+}
+
+.bg-glass-overlay {
+  background: rgba(30,20,60,0.85);
+}
+
+.bg-accent-gradient-btn {
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+}
+
+@supports not (backdrop-filter: blur(30px)) {
+  .backdrop-blur-glass,
+  .backdrop-blur-glass-heavy {
+    background: rgba(20, 15, 40, 0.9);
+  }
+}
+
 .fade-enter-active,
 .fade-leave-active {
   transition: opacity 0.2s ease, transform 0.2s ease;

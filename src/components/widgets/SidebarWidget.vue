@@ -1,23 +1,14 @@
 <template>
   <div class="h-full">
     <div
-      class="h-full flex flex-col relative"
-      :style="{
-        width: collapsed ? '48px' : '240px',
-        transition: 'width 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-        background: 'rgba(255,255,255,0.08)',
-        backdropFilter: 'blur(20px)',
-        borderRight: '1px solid rgba(255,255,255,0.12)',
-        overflow: 'hidden',
-        flexShrink: 0,
-      }"
+      class="h-full flex flex-col relative backdrop-blur-glass-light shrink-0 overflow-hidden transition-[width] duration-300 ease-sidebar bg-glass-lightest border-r border-sidebar"
+      :class="collapsed ? 'w-sidebar-collapsed' : 'w-sidebar-expanded'"
     >
       <!-- Header -->
       <div class="flex items-center justify-between px-3 py-4 shrink-0">
         <span
           v-if="!collapsed"
-          class="text-white/80 select-none"
-          style="font-size: 13px; font-weight: 600; letter-spacing: 0.05em"
+          class="text-white/80 select-none text-sm font-semibold tracking-wider"
         >
           我的书签
         </span>
@@ -75,7 +66,7 @@
               </svg>
             </div>
             <template v-if="!collapsed">
-              <span class="flex-1 text-white/80 truncate select-none" style="font-size: 13px; font-weight: 500">
+              <span class="flex-1 text-white/80 truncate select-none text-sm font-medium">
                 {{ cat.name }}
               </span>
               <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -93,7 +84,7 @@
                 width="12"
                 height="12"
                 class="text-white/40 transition-transform shrink-0"
-                :style="{ transform: cat.expanded ? 'rotate(0deg)' : 'rotate(-90deg)' }"
+                :class="cat.expanded ? 'rotate-0' : '-rotate-90'"
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
@@ -142,7 +133,7 @@
                       <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
                     </svg>
                   </div>
-                  <span class="flex-1 text-white/70 truncate select-none group-hover/bm:text-white/90 transition-colors" style="font-size: 12px">
+                  <span class="flex-1 text-white/70 truncate select-none group-hover/bm:text-white/90 transition-colors text-xs">
                     {{ bm.name }}
                   </span>
                   <svg
@@ -164,8 +155,7 @@
               </div>
               <div
                 v-if="cat.bookmarks.length === 0"
-                class="px-2 py-2 text-white/30 cursor-pointer hover:text-white/50 transition-colors flex items-center gap-1.5"
-                style="font-size: 11px"
+                class="px-2 py-2 text-white/30 cursor-pointer hover:text-white/50 transition-colors flex items-center gap-1.5 text-xs"
                 @click="openAddBookmarkModal(cat.id)"
               >
                 <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -184,8 +174,7 @@
         <button
           v-if="!collapsed"
           @click="openAddCategoryModal()"
-          class="w-full flex items-center gap-2 px-3 py-2 rounded-xl border border-dashed border-white/20 text-white/40 hover:text-white/70 hover:border-white/30 hover:bg-white/5 transition-all"
-          style="font-size: 12px"
+          class="w-full flex items-center gap-2 px-3 py-2 rounded-xl border border-dashed border-white/20 text-white/40 hover:text-white/70 hover:border-white/30 hover:bg-white/5 transition-all text-xs"
         >
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M5 12h14" />
@@ -210,21 +199,16 @@
     <Transition name="fade">
       <div
         v-if="contextMenu"
-        class="fixed z-50 rounded-xl shadow-xl overflow-hidden"
+        class="fixed z-50 rounded-xl shadow-xl overflow-hidden bg-[rgba(30,30,40,0.95)] backdrop-blur-[20px] border border-sidebar min-w-[160px]"
         :style="{
           left: contextMenu.x + 'px',
           top: contextMenu.y + 'px',
-          background: 'rgba(30,30,40,0.95)',
-          backdropFilter: 'blur(20px)',
-          border: '1px solid rgba(255,255,255,0.12)',
-          minWidth: '160px',
         }"
         @click.stop
       >
         <template v-if="contextMenu.type === 'category'">
           <button
-            class="w-full flex items-center gap-2.5 px-4 py-2.5 text-white/80 hover:bg-white/10 hover:text-white transition-colors"
-            style="font-size: 13px"
+            class="w-full flex items-center gap-2.5 px-4 py-2.5 text-white/80 hover:bg-white/10 hover:text-white transition-colors text-sm"
             @click="openAddBookmarkModal(contextMenu.categoryId); contextMenu = null"
           >
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -234,8 +218,7 @@
             添加书签
           </button>
           <button
-            class="w-full flex items-center gap-2.5 px-4 py-2.5 text-white/80 hover:bg-white/10 hover:text-white transition-colors"
-            style="font-size: 13px"
+            class="w-full flex items-center gap-2.5 px-4 py-2.5 text-white/80 hover:bg-white/10 hover:text-white transition-colors text-sm"
             @click="openEditCategoryModal(contextMenu.categoryId); contextMenu = null"
           >
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -246,8 +229,7 @@
           </button>
           <div class="h-px bg-white/10 mx-2" />
           <button
-            class="w-full flex items-center gap-2.5 px-4 py-2.5 text-red-400 hover:bg-red-500/10 transition-colors"
-            style="font-size: 13px"
+            class="w-full flex items-center gap-2.5 px-4 py-2.5 text-red-400 hover:bg-red-500/10 transition-colors text-sm"
             @click="deleteCategory(contextMenu.categoryId); contextMenu = null"
           >
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -259,8 +241,7 @@
         </template>
         <template v-else-if="contextMenu.type === 'bookmark' && contextMenu.bookmarkId">
           <button
-            class="w-full flex items-center gap-2.5 px-4 py-2.5 text-white/80 hover:bg-white/10 hover:text-white transition-colors"
-            style="font-size: 13px"
+            class="w-full flex items-center gap-2.5 px-4 py-2.5 text-white/80 hover:bg-white/10 hover:text-white transition-colors text-sm"
             @click="openEditBookmarkModal(contextMenu.categoryId, contextMenu.bookmarkId!); contextMenu = null"
           >
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -271,8 +252,7 @@
           </button>
           <div class="h-px bg-white/10 mx-2" />
           <button
-            class="w-full flex items-center gap-2.5 px-4 py-2.5 text-red-400 hover:bg-red-500/10 transition-colors"
-            style="font-size: 13px"
+            class="w-full flex items-center gap-2.5 px-4 py-2.5 text-red-400 hover:bg-red-500/10 transition-colors text-sm"
             @click="deleteBookmark(contextMenu.categoryId, contextMenu.bookmarkId!); contextMenu = null"
           >
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -290,11 +270,10 @@
       <div v-if="showModal" class="fixed inset-0 z-50 flex items-center justify-center" @click.self="showModal = false">
         <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" />
         <div
-          class="relative rounded-2xl shadow-2xl p-6 w-[360px]"
-          style="background: rgba(30,30,40,0.95); border: 1px solid rgba(255,255,255,0.12)"
+          class="relative rounded-2xl shadow-2xl p-6 w-[360px] bg-gray-900/95 border border-white/12 backdrop-blur-glass-light"
         >
           <div class="flex items-center justify-between mb-4">
-            <h3 class="text-white" style="font-size: 16px; font-weight: 600">
+            <h3 class="text-white text-base font-semibold">
               {{ modalInitial ? (modalType === 'category' ? '编辑分类' : '编辑书签') : (modalType === 'category' ? '添加分类' : '添加书签') }}
             </h3>
             <button
@@ -309,26 +288,24 @@
           </div>
           <form @submit.prevent="handleModalSubmit" class="space-y-4">
             <div>
-              <label class="block text-white/50 mb-1.5" style="font-size: 13px">名称</label>
+              <label class="block text-white/50 mb-1.5 text-sm">名称</label>
               <input
                 ref="modalNameInput"
                 v-model="modalName"
                 :placeholder="modalType === 'category' ? '分类名称' : '书签名称'"
-                class="w-full px-3 py-2.5 rounded-xl bg-white/5 border border-white/15 text-white outline-none focus:border-indigo-500 transition-colors"
-                style="font-size: 14px"
+                class="w-full px-3 py-2.5 rounded-xl bg-white/5 border border-white/15 text-white outline-none focus:border-indigo-500 transition-colors text-sm"
               />
             </div>
             <div v-if="modalType === 'bookmark'">
-              <label class="block text-white/50 mb-1.5" style="font-size: 13px">网址</label>
+              <label class="block text-white/50 mb-1.5 text-sm">网址</label>
               <input
                 v-model="modalUrl"
                 placeholder="https://example.com"
-                class="w-full px-3 py-2.5 rounded-xl bg-white/5 border border-white/15 text-white outline-none focus:border-indigo-500 transition-colors"
-                style="font-size: 14px"
+                class="w-full px-3 py-2.5 rounded-xl bg-white/5 border border-white/15 text-white outline-none focus:border-indigo-500 transition-colors text-sm"
               />
             </div>
             <div v-if="modalType === 'category'">
-              <label class="block text-white/50 mb-1.5" style="font-size: 13px">颜色</label>
+              <label class="block text-white/50 mb-1.5 text-sm">颜色</label>
               <div class="flex flex-wrap gap-2">
                 <button
                   v-for="color in COLORS"
@@ -359,15 +336,14 @@
               <button
                 type="button"
                 @click="showModal = false"
-                class="flex-1 py-2.5 rounded-xl border border-white/12 text-white/60 hover:bg-white/10 transition-colors"
-                style="font-size: 14px"
+                class="flex-1 py-2.5 rounded-xl border border-white/12 text-white/60 hover:bg-white/10 transition-colors text-sm"
               >
                 取消
               </button>
               <button
                 type="submit"
-                class="flex-1 py-2.5 rounded-xl text-white transition-all hover:opacity-90 active:scale-95"
-                :style="{ backgroundColor: modalType === 'category' ? modalColor : '#6366f1', fontSize: '14px' }"
+                class="flex-1 py-2.5 rounded-xl text-white transition-all hover:opacity-90 active:scale-95 text-sm"
+                :style="{ backgroundColor: modalType === 'category' ? modalColor : '#6366f1' }"
               >
                 保存
               </button>

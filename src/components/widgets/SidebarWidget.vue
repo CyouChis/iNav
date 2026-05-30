@@ -196,16 +196,17 @@
     </div>
 
     <!-- Context Menu -->
-    <Transition name="fade">
-      <div
-        v-if="contextMenu"
-        class="fixed z-50 rounded-xl shadow-xl overflow-hidden bg-[rgba(30,30,40,0.95)] backdrop-blur-[20px] border border-sidebar min-w-[160px]"
-        :style="{
-          left: contextMenu.x + 'px',
-          top: contextMenu.y + 'px',
-        }"
-        @click.stop
-      >
+    <Teleport to="body">
+      <Transition name="fade">
+        <div
+          v-if="contextMenu"
+          class="fixed z-[9998] rounded-xl shadow-xl overflow-hidden bg-[rgba(30,30,40,0.95)] backdrop-blur-[20px] border border-sidebar min-w-[160px]"
+          :style="{
+            left: contextMenu.x + 'px',
+            top: contextMenu.y + 'px',
+          }"
+          @click.stop
+        >
         <template v-if="contextMenu.type === 'category'">
           <button
             class="w-full flex items-center gap-2.5 px-4 py-2.5 text-white/80 hover:bg-white/10 hover:text-white transition-colors text-sm"
@@ -263,95 +264,98 @@
           </button>
         </template>
       </div>
-    </Transition>
+      </Transition>
+    </Teleport>
 
     <!-- Edit Modal -->
-    <Transition name="modal">
-      <div v-if="showModal" class="fixed inset-0 z-50 flex items-center justify-center" @click.self="showModal = false">
-        <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" />
-        <div
-          class="relative rounded-2xl shadow-2xl p-6 w-[360px] bg-gray-900/95 border border-white/12 backdrop-blur-glass-light"
-        >
-          <div class="flex items-center justify-between mb-4">
-            <h3 class="text-white text-base font-semibold">
-              {{ modalInitial ? (modalType === 'category' ? '编辑分类' : '编辑书签') : (modalType === 'category' ? '添加分类' : '添加书签') }}
-            </h3>
-            <button
-              @click="showModal = false"
-              class="w-7 h-7 flex items-center justify-center rounded-full hover:bg-white/10 text-gray-500 transition-colors"
-            >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M18 6 6 18" />
-                <path d="m6 6 12 12" />
-              </svg>
-            </button>
-          </div>
-          <form @submit.prevent="handleModalSubmit" class="space-y-4">
-            <div>
-              <label class="block text-white/50 mb-1.5 text-sm">名称</label>
-              <input
-                ref="modalNameInput"
-                v-model="modalName"
-                :placeholder="modalType === 'category' ? '分类名称' : '书签名称'"
-                class="w-full px-3 py-2.5 rounded-xl bg-white/5 border border-white/15 text-white outline-none focus:border-indigo-500 transition-colors text-sm"
-              />
+    <Teleport to="body">
+      <Transition name="modal">
+        <div v-if="showModal" class="fixed inset-0 z-[9999] flex items-center justify-center" @click.self="showModal = false">
+          <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" />
+          <div
+            class="relative rounded-2xl shadow-2xl p-6 w-[360px] bg-gray-900/95 border border-white/12 backdrop-blur-glass-light"
+          >
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="text-white text-base font-semibold">
+                {{ modalInitial ? (modalType === 'category' ? '编辑分类' : '编辑书签') : (modalType === 'category' ? '添加分类' : '添加书签') }}
+              </h3>
+              <button
+                @click="showModal = false"
+                class="w-7 h-7 flex items-center justify-center rounded-full hover:bg-white/10 text-gray-500 transition-colors"
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M18 6 6 18" />
+                  <path d="m6 6 12 12" />
+                </svg>
+              </button>
             </div>
-            <div v-if="modalType === 'bookmark'">
-              <label class="block text-white/50 mb-1.5 text-sm">网址</label>
-              <input
-                v-model="modalUrl"
-                placeholder="https://example.com"
-                class="w-full px-3 py-2.5 rounded-xl bg-white/5 border border-white/15 text-white outline-none focus:border-indigo-500 transition-colors text-sm"
-              />
-            </div>
-            <div v-if="modalType === 'category'">
-              <label class="block text-white/50 mb-1.5 text-sm">颜色</label>
-              <div class="flex flex-wrap gap-2">
-                <button
-                  v-for="color in COLORS"
-                  :key="color"
-                  type="button"
-                  @click="modalColor = color"
-                  class="w-7 h-7 rounded-full transition-transform hover:scale-110 relative"
-                  :style="{ backgroundColor: color }"
-                >
-                  <svg
-                    v-if="modalColor === color"
-                    class="absolute inset-0 m-auto text-white"
-                    width="12"
-                    height="12"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
+            <form @submit.prevent="handleModalSubmit" class="space-y-4">
+              <div>
+                <label class="block text-white/50 mb-1.5 text-sm">名称</label>
+                <input
+                  ref="modalNameInput"
+                  v-model="modalName"
+                  :placeholder="modalType === 'category' ? '分类名称' : '书签名称'"
+                  class="w-full px-3 py-2.5 rounded-xl bg-white/5 border border-white/15 text-white outline-none focus:border-indigo-500 transition-colors text-sm"
+                />
+              </div>
+              <div v-if="modalType === 'bookmark'">
+                <label class="block text-white/50 mb-1.5 text-sm">网址</label>
+                <input
+                  v-model="modalUrl"
+                  placeholder="https://example.com"
+                  class="w-full px-3 py-2.5 rounded-xl bg-white/5 border border-white/15 text-white outline-none focus:border-indigo-500 transition-colors text-sm"
+                />
+              </div>
+              <div v-if="modalType === 'category'">
+                <label class="block text-white/50 mb-1.5 text-sm">颜色</label>
+                <div class="flex flex-wrap gap-2">
+                  <button
+                    v-for="color in COLORS"
+                    :key="color"
+                    type="button"
+                    @click="modalColor = color"
+                    class="w-7 h-7 rounded-full transition-transform hover:scale-110 relative"
+                    :style="{ backgroundColor: color }"
                   >
-                    <polyline points="20 6 9 17 4 12" />
-                  </svg>
+                    <svg
+                      v-if="modalColor === color"
+                      class="absolute inset-0 m-auto text-white"
+                      width="12"
+                      height="12"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <polyline points="20 6 9 17 4 12" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+              <div class="flex gap-2 pt-2">
+                <button
+                  type="button"
+                  @click="showModal = false"
+                  class="flex-1 py-2.5 rounded-xl border border-white/12 text-white/60 hover:bg-white/10 transition-colors text-sm"
+                >
+                  取消
+                </button>
+                <button
+                  type="submit"
+                  class="flex-1 py-2.5 rounded-xl text-white transition-all hover:opacity-90 active:scale-95 text-sm"
+                  :style="{ backgroundColor: modalType === 'category' ? modalColor : '#6366f1' }"
+                >
+                  保存
                 </button>
               </div>
-            </div>
-            <div class="flex gap-2 pt-2">
-              <button
-                type="button"
-                @click="showModal = false"
-                class="flex-1 py-2.5 rounded-xl border border-white/12 text-white/60 hover:bg-white/10 transition-colors text-sm"
-              >
-                取消
-              </button>
-              <button
-                type="submit"
-                class="flex-1 py-2.5 rounded-xl text-white transition-all hover:opacity-90 active:scale-95 text-sm"
-                :style="{ backgroundColor: modalType === 'category' ? modalColor : '#6366f1' }"
-              >
-                保存
-              </button>
-            </div>
-          </form>
+            </form>
+          </div>
         </div>
-      </div>
-    </Transition>
+      </Transition>
+    </Teleport>
   </div>
 </template>
 

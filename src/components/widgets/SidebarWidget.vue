@@ -50,29 +50,51 @@
         <div v-for="cat in categories" :key="cat.id">
           <!-- Category header -->
           <div
-            class="flex items-center gap-2 px-2 py-2 rounded-xl cursor-pointer group hover:bg-white/10 transition-colors"
-            @click="!collapsed && toggleCategory(cat.id)"
+            class="flex items-center gap-2.5 px-3 py-2.5 rounded-xl cursor-pointer group transition-all duration-200"
+            :class="[
+              isActiveCategory(cat.id) 
+                ? 'bg-white/15 text-white shadow-sm' 
+                : 'text-white/70 hover:bg-white/10 hover:text-white/90'
+            ]"
+            @click="handleCategoryClick(cat.id)"
             @contextmenu.prevent="handleContextMenu($event, 'category', cat.id)"
           >
             <div
-              class="w-5 h-5 rounded-md shrink-0 flex items-center justify-center"
-              :style="{ backgroundColor: cat.color + '33', color: cat.color }"
+              class="w-6 h-6 rounded-lg shrink-0 flex items-center justify-center transition-transform duration-200"
+              :class="{ 'scale-110': isActiveCategory(cat.id) }"
+              :style="{ backgroundColor: cat.color + (isActiveCategory(cat.id) ? '44' : '22'), color: isActiveCategory(cat.id) ? cat.color : cat.color + 'cc' }"
             >
-              <svg v-if="cat.expanded" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" />
-              </svg>
-              <svg v-else width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" />
               </svg>
             </div>
             <template v-if="!collapsed">
-              <span class="flex-1 text-white/80 truncate select-none text-sm font-medium">
+              <span 
+                class="flex-1 select-none text-[13px] font-medium transition-colors"
+                :class="{ 'text-white': isActiveCategory(cat.id) }"
+              >
                 {{ cat.name }}
               </span>
-              <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+              <!-- Arrow indicator for active category -->
+              <svg 
+                v-if="isActiveCategory(cat.id)" 
+                width="14" 
+                height="14" 
+                viewBox="0 0 24 24" 
+                fill="none" 
+                stroke="currentColor" 
+                stroke-width="2.5" 
+                stroke-linecap="round" 
+                stroke-linejoin="round"
+                class="text-white/60 shrink-0"
+              >
+                <path d="m9 18 6-6-6-6" />
+              </svg>
+              <div v-else class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                 <button
                   @click.stop="openAddBookmarkModal(cat.id)"
                   class="w-5 h-5 flex items-center justify-center rounded-md hover:bg-white/20 text-white/50 hover:text-white transition-colors"
+                  title="添加书签"
                 >
                   <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M5 12h14" />
@@ -80,92 +102,8 @@
                   </svg>
                 </button>
               </div>
-              <svg
-                width="12"
-                height="12"
-                class="text-white/40 transition-transform shrink-0"
-                :class="cat.expanded ? 'rotate-0' : '-rotate-90'"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              >
-                <path d="m6 9 6 6 6-6" />
-              </svg>
             </template>
           </div>
-
-          <!-- Bookmarks -->
-          <template v-if="!collapsed && cat.expanded">
-            <div class="ml-3 pl-2 border-l border-white/10 mt-0.5 space-y-0.5">
-              <div v-for="bm in cat.bookmarks" :key="bm.id">
-                <a
-                  :href="getDisplayUrl(bm.url)"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="flex items-center gap-2 px-2 py-1.5 rounded-lg cursor-pointer group/bm hover:bg-white/10 transition-colors"
-                  @contextmenu.prevent="handleContextMenu($event, 'bookmark', cat.id, bm.id)"
-                >
-                  <div class="w-4 h-4 rounded shrink-0 overflow-hidden flex items-center justify-center">
-                    <img
-                      v-if="bm.url"
-                      :src="getFavicon(bm.url)"
-                      alt=""
-                      class="w-4 h-4"
-                      @error="($event.target as HTMLImageElement).style.display = 'none'"
-                    />
-                    <svg
-                      v-else
-                      width="12"
-                      height="12"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      stroke-width="2"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      class="text-white/40"
-                    >
-                      <circle cx="12" cy="12" r="10" />
-                      <line x1="2" y1="12" x2="22" y2="12" />
-                      <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
-                    </svg>
-                  </div>
-                  <span class="flex-1 text-white/70 truncate select-none group-hover/bm:text-white/90 transition-colors text-xs">
-                    {{ bm.name }}
-                  </span>
-                  <svg
-                    width="10"
-                    height="10"
-                    class="text-white/0 group-hover/bm:text-white/40 transition-colors shrink-0"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  >
-                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
-                    <polyline points="15 3 21 3 21 9" />
-                    <line x1="10" y1="14" x2="21" y2="3" />
-                  </svg>
-                </a>
-              </div>
-              <div
-                v-if="cat.bookmarks.length === 0"
-                class="px-2 py-2 text-white/30 cursor-pointer hover:text-white/50 transition-colors flex items-center gap-1.5 text-xs"
-                @click="openAddBookmarkModal(cat.id)"
-              >
-                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M5 12h14" />
-                  <path d="M12 5v14" />
-                </svg>
-                添加书签
-              </div>
-            </div>
-          </template>
         </div>
       </div>
 
@@ -361,6 +299,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted, nextTick } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
 
 export interface Bookmark {
   id: string
@@ -395,6 +334,19 @@ const emit = defineEmits<{
   'update:categories': [value: Category[]]
   'update:collapsed': [value: boolean]
 }>()
+
+const router = useRouter()
+const route = useRoute()
+
+function handleCategoryClick(id: string) {
+  if (!props.collapsed) {
+    router.push(`/category/${id}`)
+  }
+}
+
+function isActiveCategory(id: string): boolean {
+  return route.params.categoryId === id
+}
 
 // Modal state
 const showModal = ref(false)

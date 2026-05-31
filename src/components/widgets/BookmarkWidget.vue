@@ -1,88 +1,16 @@
 <template>
-  <div>
-    <!-- Glass container -->
+  <div :class="containerClass">
+    <!-- Glass container wrapper (only when not in grid) -->
     <div
-      class="glass-widget"
+      v-if="!isInGrid"
+      class="glass-widget relative"
     >
       <!-- Top highlight -->
       <div
         class="absolute top-0 left-8 right-8 pointer-events-none h-px bg-highlight-gradient"
       />
 
-      <div class="flex flex-wrap justify-center gap-1">
-        <TransitionGroup name="fade" tag="div" class="flex flex-wrap justify-center gap-1">
-          <div v-for="link in links" :key="link.id" class="relative group">
-            <button
-              v-if="editing"
-              @click.stop="removeLink(link.id)"
-              class="absolute -top-1 -right-1 z-10 w-4 h-4 bg-red-500 rounded-full flex items-center justify-center text-white shadow-lg"
-            >
-              <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M18 6 6 18" />
-                <path d="m6 6 12 12" />
-              </svg>
-            </button>
-            <a
-              :href="getDisplayUrl(link.url)"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="flex flex-col items-center gap-1.5 px-3 py-2 rounded-xl transition-all group/link"
-              style="width: 64px"
-              @click.prevent="editing && $event.preventDefault()"
-            >
-              <div
-                class="w-8 h-8 flex items-center justify-center rounded-xl transition-all group-hover/link:scale-110 group-hover/link:shadow-lg bg-glass-lightest"
-              >
-                <img
-                  v-if="link.url"
-                  :src="getFavicon(link.url)"
-                  :alt="link.name"
-                  class="w-5 h-5"
-                  @error="($event.target as HTMLImageElement).style.display = 'none'"
-                />
-                <svg
-                  v-else
-                  width="14"
-                  height="14"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  class="text-white/50"
-                >
-                  <circle cx="12" cy="12" r="10" />
-                  <line x1="2" y1="12" x2="22" y2="12" />
-                  <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
-                </svg>
-              </div>
-              <span
-                class="text-white/55 text-center truncate w-full group-hover/link:text-white/90 transition-colors"
-                style="font-size: 10px"
-              >
-                {{ link.name }}
-              </span>
-            </a>
-          </div>
-        </TransitionGroup>
-
-        <button
-          @click="showAdd = true"
-          class="flex flex-col items-center gap-1.5 px-3 py-2 rounded-xl transition-all hover:bg-white/8"
-          style="width: 64px"
-        >
-          <div
-            class="w-8 h-8 flex items-center justify-center rounded-xl text-white/25 hover:text-white/50 transition-colors bg-glass-subtle border border-dashed border-glass-border-dashed"
-          >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M5 12h14" />
-              <path d="M12 5v14" />
-            </svg>
-          </div>
-          <span class="text-white/25" style="font-size: 10px">添加</span>
-        </button>
-      </div>
+      <BookmarkLinks />
 
       <!-- Edit toggle -->
       <button
@@ -95,6 +23,41 @@
       </button>
     </div>
 
+    <!-- Grid mode: collapsible content without glass styling -->
+    <div v-else class="w-full h-full flex flex-col">
+      <!-- Collapse toggle header -->
+      <div 
+        v-if="isInGrid && links.length > 0"
+        @click="collapsed = !collapsed"
+        class="flex items-center justify-center gap-2 py-2 cursor-pointer group select-none"
+      >
+        <svg 
+          width="12" 
+          height="12" 
+          viewBox="0 0 24 24" 
+          fill="none" 
+          stroke="currentColor" 
+          stroke-width="2" 
+          stroke-linecap="round" 
+          stroke-linejoin="round"
+          class="text-white/40 transition-transform duration-200"
+          :class="{ 'rotate-180': collapsed }"
+        >
+          <path d="m6 9 6 6 6-6" />
+        </svg>
+        <span class="text-white/40 text-xs group-hover:text-white/60 transition-colors">
+          {{ collapsed ? '展开快捷导航' : '收起快捷导航' }}
+        </span>
+      </div>
+
+      <!-- Collapsible content -->
+      <Transition name="collapse">
+        <div v-show="!collapsed" class="flex-1 overflow-auto">
+          <BookmarkLinks />
+        </div>
+      </Transition>
+    </div>
+    
     <!-- Add Link Modal -->
     <Transition name="modal">
       <div v-if="showAdd" class="fixed inset-0 z-50 flex items-center justify-center" @click.self="showAdd = false">
@@ -156,7 +119,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { ref, watch, computed, defineComponent, h } from 'vue'
 import defaultLinksData from '@/config/links.json'
 
 export interface QuickLink {
@@ -164,6 +127,84 @@ export interface QuickLink {
   name: string
   url: string
 }
+
+interface Props {
+  isInGrid?: boolean
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  isInGrid: false,
+})
+
+const containerClass = computed(() => ({
+  'w-full h-full flex items-center justify-center p-4': props.isInGrid,
+}))
+
+// Collapse state for grid mode
+const collapsed = ref(false)
+
+// Internal component for bookmark links to avoid duplication
+const BookmarkLinks = defineComponent({
+  name: 'BookmarkLinks',
+  setup() {
+    return () => h('div', { class: 'flex flex-wrap justify-center gap-1 w-full h-full' }, [
+      // Links list
+      h('div', { class: 'flex flex-wrap justify-center gap-1' }, 
+        links.value.map(link => 
+          h('div', { key: link.id, class: 'relative group' }, [
+            // Delete button in edit mode
+            editing.value ? h('button', {
+              onClick: () => removeLink(link.id),
+              class: 'absolute -top-1 -right-1 z-10 w-4 h-4 bg-red-500 rounded-full flex items-center justify-center text-white shadow-lg'
+            }, [
+              h('svg', { width: 8, height: 8, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 2 }, [
+                h('path', { d: 'M18 6 6 18' }),
+                h('path', { d: 'm6 6 12 12' })
+              ])
+            ]) : null,
+            // Link anchor
+            h('a', {
+              href: getDisplayUrl(link.url),
+              target: '_blank',
+              rel: 'noopener noreferrer',
+              class: 'flex flex-col items-center gap-1.5 px-3 py-2 rounded-xl transition-all group/link',
+              style: { width: '64px' },
+              onClick: (e: Event) => { if (editing.value) e.preventDefault() }
+            }, [
+              h('div', { class: 'w-8 h-8 flex items-center justify-center rounded-xl transition-all group-hover/link:scale-110 group-hover/link:shadow-lg bg-glass-lightest' }, [
+                link.url ? h('img', {
+                  src: getFavicon(link.url),
+                  alt: link.name,
+                  class: 'w-5 h-5',
+                  onError: (e: Event) => { (e.target as HTMLImageElement).style.display = 'none' }
+                }) : h('svg', { width: 14, height: 14, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 2, class: 'text-white/50' }, [
+                  h('circle', { cx: 12, cy: 12, r: 10 }),
+                  h('line', { x1: 2, y1: 12, x2: 22, y2: 12 }),
+                  h('path', { d: 'M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z' })
+                ])
+              ]),
+              h('span', { class: 'text-white/55 text-center truncate w-full group-hover/link:text-white/90 transition-colors', style: { fontSize: '10px' } }, link.name)
+            ])
+          ])
+        )
+      ),
+      // Add button
+      h('button', {
+        onClick: () => { showAdd.value = true },
+        class: 'flex flex-col items-center gap-1.5 px-3 py-2 rounded-xl transition-all hover:bg-white/8',
+        style: { width: '64px' }
+      }, [
+        h('div', { class: 'w-8 h-8 flex items-center justify-center rounded-xl text-white/25 hover:text-white/50 transition-colors bg-glass-subtle border border-dashed border-glass-border-dashed' }, [
+          h('svg', { width: 14, height: 14, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 2 }, [
+            h('path', { d: 'M5 12h14' }),
+            h('path', { d: 'M12 5v14' })
+          ])
+        ]),
+        h('span', { class: 'text-white/25', style: { fontSize: '10px' } }, '添加')
+      ])
+    ])
+  }
+})
 
 const DEFAULT_LINKS: QuickLink[] = defaultLinksData.quickLinks
 
@@ -280,5 +321,24 @@ function handleAddLink() {
 .modal-leave-to > div:last-child {
   opacity: 0;
   transform: scale(0.95);
+}
+
+/* Collapse animation */
+.collapse-enter-active,
+.collapse-leave-active {
+  transition: all 0.25s ease;
+  overflow: hidden;
+}
+.collapse-enter-from,
+.collapse-leave-to {
+  opacity: 0;
+  max-height: 0;
+  transform: translateY(-10px);
+}
+.collapse-enter-to,
+.collapse-leave-from {
+  opacity: 1;
+  max-height: 400px;
+  transform: translateY(0);
 }
 </style>

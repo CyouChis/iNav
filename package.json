@@ -10,6 +10,9 @@
   },
   "dependencies": {
     "@element-plus/icons-vue": "^2.3.2",
+    "@iconify-vue/logos": "^1.0.4",
+    "@iconify-vue/material-icon-theme": "^1.0.41",
+    "@iconify-vue/ri": "^1.0.8",
     "@vueuse/motion": "^3.0.3",
     "element-plus": "^2.9.1",
     "pinia": "^2.3.0",

@@ -1,7 +1,6 @@
 <template>
-  <div class="flex-1 flex flex-col items-center justify-start py-8 px-4 min-w-0 overflow-y-auto">
-    <div class="w-full max-w-[900px] flex flex-col items-center">
-      <!-- 网格布局区域 -->
+  <div class="home-page">
+    <div class="home-content">
       <DashboardGrid
         :components="dashboard.components"
         :edit-mode="editMode"
@@ -34,3 +33,24 @@ const emit = defineEmits<{
 
 const dashboard = useDashboardStore()
 </script>
+
+<style scoped>
+.home-page {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 32px 16px;
+  min-width: 0;
+  overflow-y: auto;
+}
+
+.home-content {
+  width: 100%;
+  max-width: 900px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+</style>

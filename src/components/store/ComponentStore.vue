@@ -1,33 +1,29 @@
 <template>
   <div class="component-store">
-    <div class="flex items-center justify-between mb-6">
-      <h2 class="text-xl font-semibold text-white">组件商店</h2>
-      <button
-        @click="$emit('close')"
-        class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/10 text-white/60 hover:text-white transition-colors"
-      >
+    <div class="store-header">
+      <h2 class="store-title">组件商店</h2>
+      <el-button text circle @click="$emit('close')">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M18 6 6 18" />
           <path d="m6 6 12 12" />
         </svg>
-      </button>
+      </el-button>
     </div>
-    
-    <p class="text-white/40 text-sm mb-6">
-      拖拽组件到页面添加
-    </p>
-    
-    <div class="space-y-6">
-      <!-- 按分类分组 -->
+
+    <p class="store-desc">拖拽组件到页面添加</p>
+
+    <div class="store-groups">
       <div v-for="(group, groupName) in groupedComponents" :key="groupName">
-        <h3 class="text-white/60 text-sm font-medium mb-3">{{ groupName }}</h3>
-        <div class="grid grid-cols-2 gap-3">
-          <ComponentCard
+        <h3 class="group-title">{{ groupName }}</h3>
+        <el-row :gutter="12">
+          <el-col
             v-for="comp in group"
             :key="comp.type"
-            :component="comp"
-          />
-        </div>
+            :span="12"
+          >
+            <ComponentCard :component="comp" />
+          </el-col>
+        </el-row>
       </div>
     </div>
   </div>
@@ -57,6 +53,38 @@ const groupedComponents = computed(() => {
 
 <style scoped>
 .component-store {
-  padding: 1.5rem;
+  padding: 24px;
+}
+
+.store-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.store-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.store-desc {
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 14px;
+  margin-bottom: 24px;
+}
+
+.store-groups {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.group-title {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 12px;
 }
 </style>

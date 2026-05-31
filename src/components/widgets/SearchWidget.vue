@@ -1,28 +1,27 @@
 <template>
-  <div class="w-full max-w-[580px] mx-auto">
-    <!-- Engine selector -->
-    <div class="flex justify-center gap-2 mb-3">
-      <button
+  <div class="search-widget">
+    <div class="engine-selector">
+      <el-button
         v-for="(e, i) in ENGINES"
         :key="e.name"
-        @click="engine = i"
-        class="px-3 py-1 rounded-full transition-all"
+        :type="engine === i ? 'primary' : 'default'"
+        round
+        size="small"
         :style="{
-          fontSize: '12px',
           fontWeight: engine === i ? 600 : 400,
+          backgroundColor: engine === i ? e.color + 'cc' : 'rgba(255,255,255,0.08)',
+          borderColor: engine === i ? e.color + 'cc' : 'rgba(255,255,255,0.1)',
           color: engine === i ? 'white' : 'rgba(255,255,255,0.5)',
-          background: engine === i ? ENGINES[i].color + 'cc' : 'rgba(255,255,255,0.08)',
-          backdropFilter: 'blur(10px)',
         }"
+        @click="engine = i"
       >
         {{ e.name }}
-      </button>
+      </el-button>
     </div>
 
-    <!-- Search input -->
     <form @submit.prevent="handleSearch">
       <div
-        class="flex items-center relative"
+        class="search-box"
         :style="{
           borderRadius: '20px',
           overflow: 'hidden',
@@ -40,13 +39,12 @@
           transition: 'all 0.25s ease',
         }"
       >
-        <!-- Top highlight streak -->
         <div
-          class="absolute top-0 left-6 right-6 pointer-events-none"
+          class="search-highlight"
           style="height: 1px; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.6) 30%, rgba(255,255,255,0.6) 70%, transparent); borderRadius: 1px"
         />
         <svg
-          class="ml-4 shrink-0 transition-all duration-300"
+          class="search-icon"
           :style="{
             color: focused ? 'rgba(200,180,255,0.95)' : 'rgba(255,255,255,0.45)',
             filter: focused ? 'drop-shadow(0 0 6px rgba(180,140,255,0.8))' : 'none',
@@ -69,27 +67,19 @@
           @focus="focused = true"
           @blur="focused = false"
           :placeholder="`在 ${ENGINES[engine].name} 中搜索...`"
-          class="flex-1 px-4 py-4 bg-transparent text-white outline-none placeholder:text-white/25"
+          class="search-input"
           style="font-size: 16px; font-weight: 300; letter-spacing: 0.01em"
         />
         <Transition name="fade">
-          <button
+          <el-button
             v-if="query"
-            type="submit"
-            class="mr-2 px-4 py-2 text-white transition-all hover:opacity-90 active:scale-95"
-            style="
-              borderRadius: 12px;
-              fontSize: 13px;
-              fontWeight: 500;
-              background: linear-gradient(135deg, rgba(255,255,255,0.25) 0%, rgba(180,140,255,0.20) 100%);
-              border: 1px solid rgba(255,255,255,0.30);
-              borderTop: 1.5px solid rgba(255,255,255,0.45);
-              boxShadow: inset 0 1px 0 rgba(255,255,255,0.3), 0 2px 12px rgba(120,80,255,0.25);
-              backdropFilter: blur(10px);
-            "
+            type="primary"
+            size="small"
+            class="search-submit-btn"
+            @click="handleSearch"
           >
             搜索
-          </button>
+          </el-button>
         </Transition>
       </div>
     </form>
@@ -118,10 +108,69 @@ function handleSearch() {
 </script>
 
 <style scoped>
+.search-widget {
+  width: 100%;
+  max-width: 580px;
+  margin: 0 auto;
+}
+
+.engine-selector {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.search-box {
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.search-highlight {
+  position: absolute;
+  top: 0;
+  left: 24px;
+  right: 24px;
+  pointer-events: none;
+}
+
+.search-icon {
+  margin-left: 16px;
+  flex-shrink: 0;
+  transition: all 0.3s;
+}
+
+.search-input {
+  flex: 1;
+  padding: 16px;
+  background: transparent;
+  color: #fff;
+  outline: none;
+  border: none;
+}
+
+.search-input::placeholder {
+  color: rgba(255, 255, 255, 0.25);
+}
+
+.search-submit-btn {
+  margin-right: 8px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 500;
+  background: linear-gradient(135deg, rgba(255,255,255,0.25) 0%, rgba(180,140,255,0.20) 100%);
+  border: 1px solid rgba(255,255,255,0.30);
+  border-top: 1.5px solid rgba(255,255,255,0.45);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.3), 0 2px 12px rgba(120,80,255,0.25);
+  backdrop-filter: blur(10px);
+}
+
 .fade-enter-active,
 .fade-leave-active {
   transition: opacity 0.2s ease, transform 0.2s ease;
 }
+
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0;

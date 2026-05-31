@@ -1,120 +1,65 @@
 <template>
   <div :class="containerClass">
-    <!-- Glass container wrapper (only when not in grid) -->
-    <div
-      v-if="!isInGrid"
-      class="glass-widget relative"
-    >
-      <!-- Top highlight -->
-      <div
-        class="absolute top-0 left-8 right-8 pointer-events-none h-px bg-highlight-gradient"
-      />
-
+    <div v-if="!isInGrid" class="glass-widget bookmark-widget-container">
+      <div class="widget-highlight" />
       <BookmarkLinks />
-
-      <!-- Edit toggle -->
       <button
         v-if="links.length > 0"
         @click="editing = !editing"
-        class="absolute -top-7 right-1 text-white/35 hover:text-white/60 transition-colors"
-        style="font-size: 11px"
+        class="edit-toggle"
       >
         {{ editing ? '完成' : '编辑' }}
       </button>
     </div>
 
-    <!-- Grid mode: collapsible content without glass styling -->
-    <div v-else class="w-full h-full flex flex-col">
-      <!-- Collapse toggle header -->
-      <div 
+    <div v-else class="grid-mode-container">
+      <div
         v-if="isInGrid && links.length > 0"
         @click="collapsed = !collapsed"
-        class="flex items-center justify-center gap-2 py-2 cursor-pointer group select-none"
+        class="collapse-toggle"
       >
-        <svg 
-          width="12" 
-          height="12" 
-          viewBox="0 0 24 24" 
-          fill="none" 
-          stroke="currentColor" 
-          stroke-width="2" 
-          stroke-linecap="round" 
-          stroke-linejoin="round"
-          class="text-white/40 transition-transform duration-200"
-          :class="{ 'rotate-180': collapsed }"
+        <svg
+          width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+          class="collapse-icon"
+          :class="{ 'collapse-icon--rotated': collapsed }"
         >
           <path d="m6 9 6 6 6-6" />
         </svg>
-        <span class="text-white/40 text-xs group-hover:text-white/60 transition-colors">
-          {{ collapsed ? '展开快捷导航' : '收起快捷导航' }}
-        </span>
+        <span class="collapse-text">{{ collapsed ? '展开快捷导航' : '收起快捷导航' }}</span>
       </div>
 
-      <!-- Collapsible content -->
       <Transition name="collapse">
-        <div v-show="!collapsed" class="flex-1 overflow-auto">
+        <div v-show="!collapsed" class="collapse-content">
           <BookmarkLinks />
         </div>
       </Transition>
     </div>
-    
-    <!-- Add Link Modal -->
-    <Transition name="modal">
-      <div v-if="showAdd" class="fixed inset-0 z-50 flex items-center justify-center" @click.self="showAdd = false">
-        <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" />
-        <div
-          class="relative rounded-2xl shadow-2xl p-6 w-[340px] bg-glass-overlay backdrop-blur-glass-heavy border border-glass-border border-t border-t-glass-border-top shadow-glass-dark"
-        >
-          <div class="flex items-center justify-between mb-4">
-            <h3 style="font-size: 15px; font-weight: 600" class="text-white">添加快捷方式</h3>
-            <button
-              @click="showAdd = false"
-              class="w-7 h-7 flex items-center justify-center rounded-full hover:bg-white/10 text-white/50"
-            >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M18 6 6 18" />
-                <path d="m6 6 12 12" />
-              </svg>
-            </button>
-          </div>
-          <form @submit.prevent="handleAddLink" class="space-y-3">
-            <div>
-              <label style="font-size: 12px" class="block text-white/50 mb-1">网址</label>
-              <input
-                v-model="newLinkUrl"
-                autofocus
-                placeholder="https://example.com"
-                class="w-full px-3 py-2.5 rounded-xl text-white outline-none placeholder:text-white/25 bg-glass-lightest border border-glass-border-light text-sm"
-              />
-            </div>
-            <div>
-              <label style="font-size: 12px" class="block text-white/50 mb-1">名称（可选）</label>
-              <input
-                v-model="newLinkName"
-                :placeholder="newLinkUrl ? getDomain(newLinkUrl) : '网站名称'"
-                class="w-full px-3 py-2.5 rounded-xl text-white outline-none placeholder:text-white/25 bg-glass-lightest border border-glass-border-light text-sm"
-              />
-            </div>
-            <div class="flex gap-2 pt-1">
-              <button
-                type="button"
-                @click="showAdd = false"
-                class="flex-1 py-2.5 rounded-xl text-white/60 hover:bg-white/10 transition-colors"
-                style="font-size: 14px; border: 1px solid rgba(255,255,255,0.12)"
-              >
-                取消
-              </button>
-              <button
-                type="submit"
-                class="flex-1 py-2.5 rounded-xl text-white transition-colors bg-accent-gradient-btn text-sm"
-              >
-                添加
-              </button>
-            </div>
-          </form>
-        </div>
-      </div>
-    </Transition>
+
+    <el-dialog
+      v-model="showAdd"
+      title="添加快捷方式"
+      width="340px"
+    >
+      <el-form label-position="top" @submit.prevent="handleAddLink">
+        <el-form-item label="网址">
+          <el-input
+            v-model="newLinkUrl"
+            autofocus
+            placeholder="https://example.com"
+          />
+        </el-form-item>
+        <el-form-item label="名称（可选）">
+          <el-input
+            v-model="newLinkName"
+            :placeholder="newLinkUrl ? getDomain(newLinkUrl) : '网站名称'"
+          />
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <el-button @click="showAdd = false">取消</el-button>
+        <el-button type="primary" @click="handleAddLink">添加</el-button>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
@@ -137,70 +82,65 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const containerClass = computed(() => ({
-  'w-full h-full flex items-center justify-center p-4': props.isInGrid,
+  'widget-wrapper-grid': props.isInGrid,
+  'widget-wrapper-default': !props.isInGrid,
 }))
 
-// Collapse state for grid mode
 const collapsed = ref(false)
 
-// Internal component for bookmark links to avoid duplication
 const BookmarkLinks = defineComponent({
   name: 'BookmarkLinks',
   setup() {
-    return () => h('div', { class: 'flex flex-wrap justify-center gap-1 w-full h-full' }, [
-      // Links list
-      h('div', { class: 'flex flex-wrap justify-center gap-1' }, 
-        links.value.map(link => 
-          h('div', { key: link.id, class: 'relative group' }, [
-            // Delete button in edit mode
+    return () => h('div', { class: 'links-container' }, [
+      h('div', { class: 'links-grid' },
+        links.value.map(link =>
+          h('div', { key: link.id, class: 'link-item' }, [
             editing.value ? h('button', {
               onClick: () => removeLink(link.id),
-              class: 'absolute -top-1 -right-1 z-10 w-4 h-4 bg-red-500 rounded-full flex items-center justify-center text-white shadow-lg'
+              class: 'link-delete-btn'
             }, [
               h('svg', { width: 8, height: 8, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 2 }, [
                 h('path', { d: 'M18 6 6 18' }),
                 h('path', { d: 'm6 6 12 12' })
               ])
             ]) : null,
-            // Link anchor
             h('a', {
               href: getDisplayUrl(link.url),
               target: '_blank',
               rel: 'noopener noreferrer',
-              class: 'flex flex-col items-center gap-1.5 px-3 py-2 rounded-xl transition-all group/link',
+              class: 'link-anchor',
               style: { width: '64px' },
               onClick: (e: Event) => { if (editing.value) e.preventDefault() }
             }, [
-              h('div', { class: 'w-8 h-8 flex items-center justify-center rounded-xl transition-all group-hover/link:scale-110 group-hover/link:shadow-lg bg-glass-lightest' }, [
+              h('div', { class: 'link-icon-wrapper' }, [
                 link.url ? h('img', {
                   src: getFavicon(link.url),
                   alt: link.name,
-                  class: 'w-5 h-5',
+                  class: 'link-favicon',
                   onError: (e: Event) => { (e.target as HTMLImageElement).style.display = 'none' }
-                }) : h('svg', { width: 14, height: 14, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 2, class: 'text-white/50' }, [
+                }) : h('svg', { width: 14, height: 14, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 2, class: 'link-placeholder' }, [
                   h('circle', { cx: 12, cy: 12, r: 10 }),
                   h('line', { x1: 2, y1: 12, x2: 22, y2: 12 }),
                   h('path', { d: 'M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z' })
                 ])
               ]),
-              h('span', { class: 'text-white/55 text-center truncate w-full group-hover/link:text-white/90 transition-colors', style: { fontSize: '10px' } }, link.name)
+              h('span', { class: 'link-name', style: { fontSize: '10px' } }, link.name)
             ])
           ])
         )
       ),
-      // Add button
       h('button', {
         onClick: () => { showAdd.value = true },
-        class: 'flex flex-col items-center gap-1.5 px-3 py-2 rounded-xl transition-all hover:bg-white/8',
+        class: 'link-add-btn',
         style: { width: '64px' }
       }, [
-        h('div', { class: 'w-8 h-8 flex items-center justify-center rounded-xl text-white/25 hover:text-white/50 transition-colors bg-glass-subtle border border-dashed border-glass-border-dashed' }, [
+        h('div', { class: 'link-add-icon' }, [
           h('svg', { width: 14, height: 14, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 2 }, [
             h('path', { d: 'M5 12h14' }),
             h('path', { d: 'M12 5v14' })
           ])
         ]),
-        h('span', { class: 'text-white/25', style: { fontSize: '10px' } }, '添加')
+        h('span', { class: 'link-add-text', style: { fontSize: '10px' } }, '添加')
       ])
     ])
   }
@@ -208,11 +148,9 @@ const BookmarkLinks = defineComponent({
 
 const DEFAULT_LINKS: QuickLink[] = defaultLinksData.quickLinks
 
-// Load from localStorage or use defaults
 const storedLinks = localStorage.getItem('quickLinks')
 const links = ref<QuickLink[]>(storedLinks ? JSON.parse(storedLinks) : DEFAULT_LINKS)
 
-// Save to localStorage whenever links change
 watch(links, (newLinks) => {
   localStorage.setItem('quickLinks', JSON.stringify(newLinks))
 }, { deep: true })
@@ -272,69 +210,232 @@ function handleAddLink() {
 </script>
 
 <style scoped>
-.bg-accent-gradient {
-  background: linear-gradient(135deg, rgba(255,255,255,0.12) 0%, rgba(180,140,255,0.06) 100%);
+.widget-wrapper-grid {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
 }
 
-.bg-highlight-gradient {
+.widget-wrapper-default {
+}
+
+.bookmark-widget-container {
+  position: relative;
+}
+
+.widget-highlight {
+  position: absolute;
+  top: 0;
+  left: 32px;
+  right: 32px;
+  height: 1px;
+  pointer-events: none;
   background: linear-gradient(90deg, transparent, rgba(255,255,255,0.5) 40%, rgba(255,255,255,0.5) 60%, transparent);
 }
 
-.bg-glass-overlay {
-  background: rgba(30,20,60,0.85);
+.edit-toggle {
+  position: absolute;
+  top: -28px;
+  right: 4px;
+  color: rgba(255, 255, 255, 0.35);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 11px;
+  transition: color 0.2s;
 }
 
-.bg-accent-gradient-btn {
-  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+.edit-toggle:hover {
+  color: rgba(255, 255, 255, 0.6);
 }
 
-@supports not (backdrop-filter: blur(30px)) {
-  .backdrop-blur-glass,
-  .backdrop-blur-glass-heavy {
-    background: rgba(20, 15, 40, 0.9);
-  }
+.grid-mode-container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.2s ease, transform 0.2s ease;
-}
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
-  transform: scale(0.8);
-}
-
-.modal-enter-active,
-.modal-leave-active {
-  transition: opacity 0.2s ease;
-}
-.modal-enter-from,
-.modal-leave-to {
-  opacity: 0;
-}
-.modal-enter-active > div:last-child,
-.modal-leave-active > div:last-child {
-  transition: transform 0.2s ease, opacity 0.2s ease;
-}
-.modal-enter-from > div:last-child,
-.modal-leave-to > div:last-child {
-  opacity: 0;
-  transform: scale(0.95);
+.collapse-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 0;
+  cursor: pointer;
+  user-select: none;
 }
 
-/* Collapse animation */
+.collapse-icon {
+  color: rgba(255, 255, 255, 0.4);
+  transition: transform 0.2s;
+}
+
+.collapse-icon--rotated {
+  transform: rotate(180deg);
+}
+
+.collapse-text {
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 12px;
+  transition: color 0.2s;
+}
+
+.collapse-toggle:hover .collapse-text {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.collapse-content {
+  flex: 1;
+  overflow: auto;
+}
+
+.links-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 4px;
+  width: 100%;
+  height: 100%;
+}
+
+.links-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 4px;
+}
+
+.link-item {
+  position: relative;
+}
+
+.link-delete-btn {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  z-index: 10;
+  width: 16px;
+  height: 16px;
+  background: #ef4444;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.link-anchor {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border-radius: 12px;
+  transition: all 0.2s;
+  text-decoration: none;
+}
+
+.link-anchor:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.link-anchor:hover .link-icon-wrapper {
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.link-anchor:hover .link-name {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.link-icon-wrapper {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  transition: all 0.2s;
+  background: var(--glass-lightest);
+}
+
+.link-favicon {
+  width: 20px;
+  height: 20px;
+}
+
+.link-placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.link-name {
+  color: rgba(255, 255, 255, 0.55);
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
+  transition: color 0.2s;
+}
+
+.link-add-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border-radius: 12px;
+  transition: all 0.2s;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.link-add-btn:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.link-add-icon {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  color: rgba(255, 255, 255, 0.25);
+  transition: color 0.2s;
+  background: var(--glass-subtle);
+  border: 1px dashed var(--glass-border-dashed);
+}
+
+.link-add-btn:hover .link-add-icon {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.link-add-text {
+  color: rgba(255, 255, 255, 0.25);
+}
+
 .collapse-enter-active,
 .collapse-leave-active {
   transition: all 0.25s ease;
   overflow: hidden;
 }
+
 .collapse-enter-from,
 .collapse-leave-to {
   opacity: 0;
   max-height: 0;
   transform: translateY(-10px);
 }
+
 .collapse-enter-to,
 .collapse-leave-from {
   opacity: 1;

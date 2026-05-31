@@ -1,32 +1,32 @@
 <template>
-  <div class="text-center select-none">
-    <div class="flex items-center justify-center gap-1" style="line-height: 1">
+  <div class="clock-widget">
+    <div class="clock-time" style="line-height: 1">
       <span
-        class="text-white"
+        class="clock-hour"
         style="font-size: 88px; font-weight: 200; letter-spacing: -0.02em; text-shadow: 0 2px 40px rgba(0,0,0,0.3)"
       >
         {{ h }}
       </span>
       <span
-        class="text-white/60 mx-1"
+        class="clock-colon"
         style="font-size: 72px; font-weight: 200"
       >
         :
       </span>
       <span
-        class="text-white"
+        class="clock-minute"
         style="font-size: 88px; font-weight: 200; letter-spacing: -0.02em; text-shadow: 0 2px 40px rgba(0,0,0,0.3)"
       >
         {{ m }}
       </span>
       <span
-        class="text-white/40 ml-2 self-end mb-4"
+        class="clock-second"
         style="font-size: 32px; font-weight: 200"
       >
         {{ s }}
       </span>
     </div>
-    <div class="text-white/60 mt-2" style="font-size: 16px; font-weight: 300; letter-spacing: 0.1em">
+    <div class="clock-date" style="font-size: 16px; font-weight: 300; letter-spacing: 0.1em">
       {{ year }}年 {{ month }}{{ date }}日 {{ weekday }}
     </div>
   </div>
@@ -71,3 +71,39 @@ onUnmounted(() => {
   }
 })
 </script>
+
+<style scoped>
+.clock-widget {
+  text-align: center;
+  user-select: none;
+}
+
+.clock-time {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+.clock-hour,
+.clock-minute {
+  color: #fff;
+}
+
+.clock-colon {
+  color: rgba(255, 255, 255, 0.6);
+  margin: 0 4px;
+}
+
+.clock-second {
+  color: rgba(255, 255, 255, 0.4);
+  margin-left: 8px;
+  align-self: flex-end;
+  margin-bottom: 16px;
+}
+
+.clock-date {
+  color: rgba(255, 255, 255, 0.6);
+  margin-top: 8px;
+}
+</style>

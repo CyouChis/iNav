@@ -1,58 +1,56 @@
 <template>
-  <div class="flex-1 flex flex-col px-8 py-10 min-w-0">
-    <div class="flex items-center justify-between mb-8">
-      <div class="flex items-center gap-3">
-        <button
-          @click="goBack"
-          class="w-10 h-10 flex items-center justify-center rounded-xl text-white/60 hover:text-white hover:bg-white/10 transition-all"
-        >
+  <div class="category-detail">
+    <div class="detail-header">
+      <div class="header-left">
+        <el-button text circle @click="goBack">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="m15 18-6-6 6-6" />
           </svg>
-        </button>
-        <div class="flex items-center gap-3">
+        </el-button>
+        <div class="header-info">
           <div
-            class="w-10 h-10 rounded-xl flex items-center justify-center"
+            class="category-icon"
             :style="{ backgroundColor: category?.color + '33', color: category?.color }"
           >
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" />
             </svg>
           </div>
-          <h1 class="text-white text-2xl font-bold">{{ category?.name }}</h1>
+          <h1 class="category-title">{{ category?.name }}</h1>
         </div>
       </div>
-      
-      <button
-        @click="showAddBookmarkModal = true"
-        class="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/10 text-white hover:bg-white/20 transition-all"
-      >
+
+      <el-button @click="showAddBookmarkModal = true">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M5 12h14" />
           <path d="M12 5v14" />
         </svg>
         添加书签
-      </button>
+      </el-button>
     </div>
 
-    <div v-if="category" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
-      <div
+    <el-row v-if="category" :gutter="16">
+      <el-col
         v-for="bookmark in category.bookmarks"
         :key="bookmark.id"
-        class="group relative"
+        :xs="12"
+        :sm="8"
+        :md="6"
+        :lg="5"
+        :xl="4"
       >
         <a
           :href="getDisplayUrl(bookmark.url)"
           target="_blank"
           rel="noopener noreferrer"
-          class="block rounded-2xl p-6 bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all text-center"
+          class="bookmark-card"
         >
-          <div class="w-16 h-16 rounded-2xl bg-white/10 flex items-center justify-center mx-auto mb-3">
+          <div class="bookmark-icon-wrapper">
             <img
               v-if="bookmark.url"
               :src="getFavicon(bookmark.url)"
               alt=""
-              class="w-10 h-10"
+              class="bookmark-favicon"
               @error="($event.target as HTMLImageElement).style.display = 'none'"
             />
             <svg
@@ -65,97 +63,71 @@
               stroke-width="2"
               stroke-linecap="round"
               stroke-linejoin="round"
-              class="text-white/40"
+              class="bookmark-placeholder-icon"
             >
               <circle cx="12" cy="12" r="10" />
               <line x1="2" y1="12" x2="22" y2="12" />
               <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
             </svg>
           </div>
-          <h3 class="text-white font-semibold text-sm truncate">{{ bookmark.name }}</h3>
+          <h3 class="bookmark-name">{{ bookmark.name }}</h3>
         </a>
-      </div>
-      
-      <div
-        v-if="category.bookmarks.length === 0"
-        class="col-span-full flex flex-col items-center justify-center py-20"
-      >
-        <div class="w-24 h-24 rounded-2xl bg-white/5 flex items-center justify-center mb-4">
-          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="text-white/30">
-            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
-            <polyline points="17 21 17 13 7 13 7 21" />
-            <polyline points="7 3 7 8 15 8" />
-          </svg>
-        </div>
-        <p class="text-white/40 text-lg mb-4">此分类暂无书签</p>
-        <button
-          @click="showAddBookmarkModal = true"
-          class="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/10 text-white hover:bg-white/20 transition-all"
-        >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M5 12h14" />
-            <path d="M12 5v14" />
-          </svg>
-          添加第一个书签
-        </button>
-      </div>
-    </div>
+      </el-col>
 
-    <!-- 添加书签模态框 -->
-    <Transition name="fade">
-      <div v-if="showAddBookmarkModal" class="fixed inset-0 z-50 flex items-center justify-center" @click.self="showAddBookmarkModal = false">
-        <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" />
-        <div class="relative rounded-2xl shadow-2xl p-6 w-[400px] bg-gray-900/95 border border-white/12 backdrop-blur-glass-light">
-          <div class="flex items-center justify-between mb-6">
-            <h3 class="text-white text-lg font-semibold">添加书签</h3>
-            <button
-              @click="showAddBookmarkModal = false"
-              class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/10 text-gray-400 hover:text-white transition-colors"
-            >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M18 6 6 18" />
-                <path d="m6 6 12 12" />
-              </svg>
-            </button>
+      <el-col
+        v-if="category.bookmarks.length === 0"
+        :span="24"
+      >
+        <div class="empty-state">
+          <div class="empty-icon-wrapper">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="empty-icon">
+              <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
+              <polyline points="17 21 17 13 7 13 7 21" />
+              <polyline points="7 3 7 8 15 8" />
+            </svg>
           </div>
-          
-          <form @submit.prevent="addNewBookmark" class="space-y-4">
-            <div>
-              <label class="block text-white/60 mb-2 text-sm">名称</label>
-              <input
-                v-model="newBookmark.name"
-                placeholder="书签名称"
-                class="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/15 text-white placeholder-white/30 outline-none focus:border-indigo-500 transition-colors"
-              />
-            </div>
-            <div>
-              <label class="block text-white/60 mb-2 text-sm">网址</label>
-              <input
-                v-model="newBookmark.url"
-                placeholder="https://example.com"
-                class="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/15 text-white placeholder-white/30 outline-none focus:border-indigo-500 transition-colors"
-              />
-            </div>
-            <div class="flex gap-3 pt-2">
-              <button
-                type="button"
-                @click="showAddBookmarkModal = false"
-                class="flex-1 py-3 rounded-xl border border-white/15 text-white/70 hover:bg-white/10 hover:text-white transition-all"
-              >
-                取消
-              </button>
-              <button
-                type="submit"
-                class="flex-1 py-3 rounded-xl text-white transition-all hover:opacity-90 active:scale-95"
-                :style="{ backgroundColor: category?.color || '#6366f1' }"
-              >
-                保存
-              </button>
-            </div>
-          </form>
+          <p class="empty-text">此分类暂无书签</p>
+          <el-button @click="showAddBookmarkModal = true">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M5 12h14" />
+              <path d="M12 5v14" />
+            </svg>
+            添加第一个书签
+          </el-button>
         </div>
-      </div>
-    </Transition>
+      </el-col>
+    </el-row>
+
+    <el-dialog
+      v-model="showAddBookmarkModal"
+      title="添加书签"
+      width="400px"
+    >
+      <el-form label-position="top" @submit.prevent="addNewBookmark">
+        <el-form-item label="名称">
+          <el-input
+            v-model="newBookmark.name"
+            placeholder="书签名称"
+          />
+        </el-form-item>
+        <el-form-item label="网址">
+          <el-input
+            v-model="newBookmark.url"
+            placeholder="https://example.com"
+          />
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <el-button @click="showAddBookmarkModal = false">取消</el-button>
+        <el-button
+          type="primary"
+          :style="{ backgroundColor: category?.color || '#6366f1', borderColor: category?.color || '#6366f1' }"
+          @click="addNewBookmark"
+        >
+          保存
+        </el-button>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
@@ -181,7 +153,7 @@ const newBookmark = ref<Omit<Bookmark, 'id'>>({
   url: ''
 })
 
-const category = computed(() => 
+const category = computed(() =>
   props.categories.find(cat => cat.id === route.params.categoryId)
 )
 
@@ -205,7 +177,7 @@ function goBack() {
 
 function addNewBookmark() {
   if (!newBookmark.value.name.trim() || !category.value) return
-  
+
   const updatedCategories = props.categories.map(cat => {
     if (cat.id === category.value!.id) {
       return {
@@ -222,7 +194,7 @@ function addNewBookmark() {
     }
     return cat
   })
-  
+
   emit('update:categories', updatedCategories)
   newBookmark.value = { name: '', url: '' }
   showAddBookmarkModal.value = false
@@ -230,13 +202,120 @@ function addNewBookmark() {
 </script>
 
 <style scoped>
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.2s ease, transform 0.2s ease;
+.category-detail {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 40px 32px;
+  min-width: 0;
 }
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
-  transform: scale(0.95);
+
+.detail-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 32px;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.header-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.category-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.category-title {
+  color: #fff;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.bookmark-card {
+  display: block;
+  border-radius: 16px;
+  padding: 24px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  text-align: center;
+  transition: all 0.2s;
+  text-decoration: none;
+  margin-bottom: 16px;
+}
+
+.bookmark-card:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.bookmark-icon-wrapper {
+  width: 64px;
+  height: 64px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 12px;
+}
+
+.bookmark-favicon {
+  width: 40px;
+  height: 40px;
+}
+
+.bookmark-placeholder-icon {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.bookmark-name {
+  color: #fff;
+  font-weight: 600;
+  font-size: 14px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 0;
+}
+
+.empty-icon-wrapper {
+  width: 96px;
+  height: 96px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.05);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+
+.empty-icon {
+  color: rgba(255, 255, 255, 0.3);
+}
+
+.empty-text {
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 18px;
+  margin-bottom: 16px;
 }
 </style>

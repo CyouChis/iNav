@@ -1,12 +1,11 @@
 <template>
   <div
-    class="dashboard-grid relative"
+    class="dashboard-grid"
     @dragover.prevent="handleDragOver"
     @dragenter.prevent="handleDragEnter"
     @dragleave.prevent="handleDragLeave"
     @drop.prevent="handleDrop"
   >
-    <!-- 背景网格线 - 仅在编辑模式显示 -->
     <div
       v-if="editMode"
       v-for="i in totalCells"
@@ -14,15 +13,13 @@
       class="grid-cell"
       :style="getCellStyle(i - 1)"
     ></div>
-    
-    <!-- 拖放预览占位符 -->
+
     <div
       v-if="dropPreview"
       class="drop-preview"
       :style="dropPreview.style"
     ></div>
-    
-    <!-- 网格组件 -->
+
     <GridItem
       v-for="comp in components"
       :key="comp.id"
@@ -75,7 +72,7 @@ const getCellStyle = (index: number) => {
   const y = Math.floor(index / dashboard.gridColumns)
   const left = x * (dashboard.cellSize + dashboard.gap)
   const top = y * (dashboard.cellSize + dashboard.gap)
-  
+
   return {
     position: 'absolute' as const,
     left: `${left}px`,
@@ -91,30 +88,28 @@ const getCellStyle = (index: number) => {
 
 const handleDragOver = (e: DragEvent) => {
   if (!dropData.value) return
-  
-  // 防止默认行为并允许 drop
+
   e.preventDefault()
   if (e.dataTransfer) {
     e.dataTransfer.dropEffect = 'copy'
   }
-  
+
   const rect = (e.currentTarget as HTMLElement).getBoundingClientRect()
   const x = e.clientX - rect.left
   const y = e.clientY - rect.top
-  
+
   const cellTotal = dashboard.cellSize + dashboard.gap
   const gridX = Math.floor(x / cellTotal)
   const gridY = Math.floor(y / cellTotal)
-  
-  // 确保不超出边界
+
   const boundedX = Math.max(0, Math.min(gridX, dashboard.gridColumns - dropData.value.w))
   const boundedY = Math.max(0, gridY)
-  
+
   const previewLeft = boundedX * cellTotal
   const previewTop = boundedY * cellTotal
   const previewWidth = dropData.value.w * cellTotal - dashboard.gap
   const previewHeight = dropData.value.h * cellTotal - dashboard.gap
-  
+
   dropPreview.value = {
     x: boundedX,
     y: boundedY,
@@ -138,7 +133,7 @@ const handleDragOver = (e: DragEvent) => {
 const handleDragEnter = (e: DragEvent) => {
   e.preventDefault()
   e.stopPropagation()
-  
+
   const data = e.dataTransfer?.getData('text/plain')
   if (data) {
     try {
@@ -152,8 +147,7 @@ const handleDragEnter = (e: DragEvent) => {
 const handleDragLeave = (e: DragEvent) => {
   e.preventDefault()
   e.stopPropagation()
-  
-  // 只在真正离开网格区域时才清除
+
   const relatedTarget = e.relatedTarget as HTMLElement | null
   if (relatedTarget && !(e.currentTarget as HTMLElement).contains(relatedTarget)) {
     dropPreview.value = null
@@ -164,14 +158,13 @@ const handleDragLeave = (e: DragEvent) => {
 const handleDrop = (e: DragEvent) => {
   e.preventDefault()
   e.stopPropagation()
-  
+
   if (!dropPreview.value || !dropData.value) {
     dropPreview.value = null
     dropData.value = null
     return
   }
-  
-  // 检查碰撞
+
   const hasCollision = props.components.some((c) => {
     return (
       dropPreview.value!.x < c.x + c.w &&
@@ -180,7 +173,7 @@ const handleDrop = (e: DragEvent) => {
       dropPreview.value!.y + dropPreview.value!.h > c.y
     )
   })
-  
+
   if (!hasCollision) {
     emit('addComponent', {
       type: dropData.value.type,
@@ -190,7 +183,7 @@ const handleDrop = (e: DragEvent) => {
       h: dropData.value.h,
     })
   }
-  
+
   dropPreview.value = null
   dropData.value = null
 }
